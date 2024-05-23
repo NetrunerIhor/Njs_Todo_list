@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script>
+        async function loadTodos() {
+            const response = await fetch('/todos');
+            const todos = await response.json();
+            const todoList = document.getElementById('todo-list');
+            todoList.innerHTML = '';
+
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <form action="/toggle/${todo.id}" method="POST" style="display:inline;">
+                        <button type="submit">${todo.completed ? 'Undo' : 'Complete'}</button>
+                    </form>
+                    ${todo.text}
+                    <form action="/delete/${todo.id}" method="POST" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                `;
+                todoList.appendChild(li);
+            });
+        }
+
+        window.onload = loadTodos;
+    </script>
+</head>
+<body>
+    <h1>Todo List</h1>
+
+    <form action="/add" method="POST">
+        <input type="text" name="todo" placeholder="Add a new task" required>
+        <button type="submit">Add</button>
+    </form>
+
+    <ul id="todo-list"></ul>
+</body>
+</html>
